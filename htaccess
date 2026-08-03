@@ -1,0 +1,31 @@
+# T & A Enterprise — security headers for Apache/cPanel hosting
+# Place this file in the site's public root (same folder as index.html)
+
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+  Header always set Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# Force HTTPS
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Block access to hidden/system files
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent hotlinking of assets (optional — adjust domain)
+# RewriteCond %{HTTP_REFERER} !^https://(www\.)?tanaenterprise\.co\.za [NC]
+# RewriteCond %{HTTP_REFERER} !^$
+# RewriteRule \.(jpg|jpeg|png|svg|gif)$ - [F]
